@@ -27,7 +27,7 @@ Enable the middleware:
 
 ```
 
-var wit = require('botkit-middleware-witai')({
+var wit = require('botkit-middleware-witai').botkitMiddlewareWitai({
     token: <my_wit_token>
 });
 
