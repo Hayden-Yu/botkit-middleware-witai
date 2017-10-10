@@ -34,30 +34,27 @@ module.exports = {botkitMiddlewareWitai: function(config) {
     }; //receive
 
     middleware.hears = function(patterns, message) {
-        var match = (p, e) => {
-            if(!e.value || !e.confidence) {
-                return false;
+        var match = (pattern, name) => {
+            if(pattern instanceof RegExp) {
+                return pattern.test(name);
+            } else { //treat pattern as string since botkit controller.hears allows only regex and string
+                return pattern.toLowerCase() === name.toLowerCase();
             }
-            if(e.confidence >= config.minimum_confidence) {
-                if(p instanceof RegExp) {
-                    return p.test(e.value);
-                } else { //treat t as string since botkit controller.hears allows only regex and string
-                    return p.toLowerCase() === e.value.toLowerCase();
-                }
-            }
-            return false;
         };
 
         if(message.entities) {
-            for(let i = 0; i < Object.keys(message.entities).length; i++) {
-                for(let j = 0; j < message.entities[Object.keys(message.entities)[i]].length; j++) {
-                    for(let k = 0; k < patterns.length; k++) {
-                        if(match(patterns[k], message.entities[Object.keys(message.entities)[i]][j])) {
-                            logger.debug('hears found match: ' + JSON.stringify(message.entities[Object.keys(message.entities)[i]][j]));
-                            return true;
-                        }
-                    } //k patterns
-                } //j arrays
+            var names = Object.keys(message.entities);
+            for(let i = 0; i < names.length; i++) {
+                for(let k = 0; k < patterns.length; k++) {
+                    if(match(patterns[k], names[i])) {
+                        for(let j = 0; j < message.entities[names[i]].length; j++) {
+                            if(message.entities[names[i]][j].confidence > config.minimum_confidence) {
+                                logger.debug('hears found match: ' + JSON.stringify(message.entities[names[i]][j]));
+                                return true;
+                            }
+                        }//j entity values
+                    }
+                } //k patterns
             } //i entities
         }
         return false;
