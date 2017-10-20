@@ -27,8 +27,10 @@ Enable the middleware:
 
 ```
 
-var wit = require('botkit-middleware-witai').botkitMiddlewareWitai({
-    token: <my_wit_token>
+var wit = require('botkit-middleware-witai')({
+    token: <my_wit_token>,
+    [logger: <logger>],
+    [minimum_confidence: <default 0.5>]
 });
 
 controller.middleware.receive.use(wit.receive);
