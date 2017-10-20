@@ -1,7 +1,7 @@
 const Wit = require('node-wit').Wit;
 const Log = require('node-wit').log;
 
-module.exports = {botkitMiddlewareWitai: function(config) {
+module.exports = function(config) {
 
     //set default vales, create node-wit
     if (!config || !config.token) {
@@ -10,9 +10,8 @@ module.exports = {botkitMiddlewareWitai: function(config) {
     if (!config.minimum_confidence) {
         config.minimum_confidence = 0.5;
     }
-    config.log_level = config.log_level || Log.INFO;
 
-    var logger = new Log.Logger(config.log_level);
+    var logger = config.logger || new Log.Logger(Log.INFO);
     var client = new Wit({
         accessToken: config.token,
         logger: logger,
@@ -61,4 +60,4 @@ module.exports = {botkitMiddlewareWitai: function(config) {
     }; //hears
 
     return middleware;
-}, logLevel: {debug: Log.DEBUG, info: Log.INFO, warn: Log.WARN, error: Log.ERROR}};
+};
